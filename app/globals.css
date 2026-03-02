@@ -32,7 +32,7 @@
 
   --color-sidebar: color-mix(in srgb, hsl(var(--primary)) 4%, hsl(var(--background)));
 
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-sans: "Source Sans 3", system-ui, arial, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
 
   --radius-xs: 0.25rem;
@@ -295,7 +295,7 @@ select,
   h4,
   h5,
   h6 {
-    font-family: var(--font-sans), sans-serif;
+    font-family: var(--font-serif), serif;
     font-weight: 700;
   }
 
