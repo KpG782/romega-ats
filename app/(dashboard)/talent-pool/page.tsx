@@ -470,7 +470,7 @@ function ProfileMenu({
             {ALL_STATUSES.map((s) => (
               <button key={s} onClick={() => { onStatusChange(s); onClose(); }} className={cn(row, profile.status === s && "text-primary font-medium")}>
                 {profile.status === s ? <Check className="h-3.5 w-3.5 text-primary" /> : <span className="w-3.5" />}
-                <StatusIcon status={s} style={{ color: STATUS_META[s].color }} />
+                <span style={{ color: STATUS_META[s].color }}><StatusIcon status={s} /></span>
                 {s}
               </button>
             ))}
@@ -510,7 +510,7 @@ function BulkBar({ count, onStatus, onEmail, onDelete, onClear }: {
             <div className="absolute bottom-full mb-2 left-0 min-w-36 rounded-xl border border-border bg-surface py-1 shadow-(--shadow-overlay)">
               {ALL_STATUSES.map((s) => (
                 <button key={s} onClick={() => { onStatus(s); setOpen(false); }} className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-foreground-muted hover:bg-surface-elevated hover:text-foreground transition-colors">
-                  <StatusIcon status={s} style={{ color: STATUS_META[s].color }} /> {s}
+                  <span style={{ color: STATUS_META[s].color }}><StatusIcon status={s} /></span> {s}
                 </button>
               ))}
             </div>
