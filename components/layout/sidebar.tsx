@@ -19,7 +19,9 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
+import Image from "next/image";
 import { Avatar } from "@/components/ui/avatar";
+import { useAuth } from "@/lib/auth-context";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -38,6 +40,7 @@ const secondaryNav = [
 export function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const { user, logout } = useAuth();
 
   const isActive = (href: string) => {
     if (href === "/dashboard") return pathname === "/dashboard";
@@ -47,21 +50,28 @@ export function Sidebar() {
   return (
     <aside
       className={cn(
-        "relative flex h-screen shrink-0 flex-col border-r border-[var(--color-border)] bg-[var(--color-sidebar)] transition-all duration-200",
+        "relative flex h-screen shrink-0 flex-col border-r border-border bg-sidebar transition-all duration-200",
         collapsed ? "w-20" : "w-72"
       )}
     >
-      <div className={cn("flex h-16 items-center border-b border-[var(--color-border)] px-4", collapsed ? "justify-center" : "justify-between")}>
+      <div className={cn("flex h-16 items-center border-b border-border px-4", collapsed ? "justify-center" : "justify-between")}>
         {!collapsed && (
-          <div>
-            <p className="text-sm font-bold leading-none text-[var(--color-foreground)]">Romega ATS</p>
-            <p className="mt-0.5 text-xs text-[var(--color-foreground-subtle)]">Hiring Platform</p>
+          <div className="flex flex-col gap-0.5">
+            <Image
+              src="/public/images/navbar-company-logo.svg"
+              alt="Roméga Solutions"
+              width={120}
+              height={32}
+              className="object-contain"
+              priority
+            />
+            <p className="text-[10px] font-medium uppercase tracking-widest text-foreground-subtle">ATS Platform</p>
           </div>
         )}
         <button
           type="button"
           onClick={() => setCollapsed((prev) => !prev)}
-          className="rounded-md p-1.5 text-[var(--color-foreground-subtle)] transition-colors hover:bg-[var(--color-surface-elevated)] hover:text-[var(--color-foreground)]"
+          className="rounded-md p-1.5 text-foreground-subtle transition-colors hover:bg-surface-elevated hover:text-foreground"
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
@@ -72,7 +82,7 @@ export function Sidebar() {
       <div className={cn("py-4", collapsed ? "px-2.5" : "px-4")}>
         <button
           className={cn(
-            "flex w-full items-center rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-xs text-[var(--color-foreground-subtle)] transition-all hover:border-[var(--color-primary)]/30 hover:bg-[var(--color-surface-elevated)] hover:text-[var(--color-foreground-muted)]",
+            "flex w-full items-center rounded-lg border border-border bg-surface text-xs text-foreground-subtle transition-all hover:border-primary/30 hover:bg-surface-elevated hover:text-foreground-muted",
             collapsed ? "justify-center px-2 py-2.5" : "gap-2.5 px-3 py-2.5"
           )}
           title="Search"
@@ -81,7 +91,7 @@ export function Sidebar() {
           {!collapsed && (
             <>
               <span className="flex-1 text-left">Search...</span>
-              <kbd className="rounded-md bg-[var(--color-surface-elevated)] px-1.5 py-0.5 font-mono text-xs text-[var(--color-foreground-subtle)]">
+              <kbd className="rounded-md bg-surface-elevated px-1.5 py-0.5 font-mono text-xs text-foreground-subtle">
                 Ctrl+K
               </kbd>
             </>
@@ -103,18 +113,18 @@ export function Sidebar() {
                   "relative flex items-center rounded-lg text-sm transition-all duration-150",
                   collapsed ? "justify-center px-2 py-2.5" : "gap-2.5 px-3 py-2.5",
                   active
-                    ? "bg-[var(--color-primary-subtle)] text-[var(--color-foreground)] font-medium"
-                    : "text-[var(--color-foreground-muted)] hover:bg-[var(--color-surface-elevated)] hover:text-[var(--color-foreground)]"
+                    ? "bg-primary-subtle text-foreground font-medium"
+                    : "text-foreground-muted hover:bg-surface-elevated hover:text-foreground"
                 )}
               >
                 {active && (
-                  <span className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-[var(--color-primary)]" />
+                  <span className="absolute left-0 top-1/2 h-5 w-0.75 -translate-y-1/2 rounded-r-full bg-primary" />
                 )}
 
                 <Icon
                   className={cn(
                     "h-4 w-4 shrink-0",
-                    active ? "text-[var(--color-primary)]" : "text-[var(--color-foreground-subtle)]"
+                    active ? "text-primary" : "text-foreground-subtle"
                   )}
                 />
                 {!collapsed && <span className="flex-1">{item.label}</span>}
@@ -124,8 +134,8 @@ export function Sidebar() {
                     className={cn(
                       "rounded-full px-1.5 py-0.5 text-xs font-semibold tabular-nums",
                       active
-                        ? "bg-[var(--color-primary)]/20 text-[var(--color-primary)]"
-                        : "bg-[var(--color-surface-hover)] text-[var(--color-foreground-subtle)]"
+                        ? "bg-primary/20 text-primary"
+                        : "bg-surface-hover text-foreground-subtle"
                     )}
                   >
                     {item.badge}
@@ -136,10 +146,10 @@ export function Sidebar() {
           })}
         </div>
 
-        <div className="my-3 border-t border-[var(--color-border)]" />
+        <div className="my-3 border-t border-border" />
 
         {!collapsed && (
-          <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-[var(--color-foreground-subtle)]">
+          <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wide text-foreground-subtle">
             Manage
           </p>
         )}
@@ -157,17 +167,17 @@ export function Sidebar() {
                   "relative flex items-center rounded-lg text-sm transition-all duration-150",
                   collapsed ? "justify-center px-2 py-2.5" : "gap-2.5 px-3 py-2.5",
                   active
-                    ? "bg-[var(--color-primary-subtle)] text-[var(--color-foreground)] font-medium"
-                    : "text-[var(--color-foreground-muted)] hover:bg-[var(--color-surface-elevated)] hover:text-[var(--color-foreground)]"
+                    ? "bg-primary-subtle text-foreground font-medium"
+                    : "text-foreground-muted hover:bg-surface-elevated hover:text-foreground"
                 )}
               >
                 {active && (
-                  <span className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-[var(--color-primary)]" />
+                  <span className="absolute left-0 top-1/2 h-5 w-0.75 -translate-y-1/2 rounded-r-full bg-primary" />
                 )}
                 <Icon
                   className={cn(
                     "h-4 w-4 shrink-0",
-                    active ? "text-[var(--color-primary)]" : "text-[var(--color-foreground-subtle)]"
+                    active ? "text-primary" : "text-foreground-subtle"
                   )}
                 />
                 {!collapsed && item.label}
@@ -177,10 +187,22 @@ export function Sidebar() {
         </div>
       </nav>
 
-      <div className={cn("space-y-2 border-t border-[var(--color-border)]", collapsed ? "p-2.5" : "p-4")}>
+      {!collapsed && (
+        <div className="px-4 pb-2 flex items-center justify-center opacity-20">
+          <Image
+            src="/public/images/footer/rs-footer.svg"
+            alt="Roméga Solutions"
+            width={72}
+            height={20}
+            className="object-contain"
+          />
+        </div>
+      )}
+
+      <div className={cn("space-y-2 border-t border-border", collapsed ? "p-2.5" : "p-4")}>
         <button
           className={cn(
-            "flex w-full items-center rounded-lg px-2.5 py-2 text-xs text-[var(--color-foreground-muted)] transition-colors hover:bg-[var(--color-surface-elevated)] hover:text-[var(--color-foreground)]",
+            "flex w-full items-center rounded-lg px-2.5 py-2 text-xs text-foreground-muted transition-colors hover:bg-surface-elevated hover:text-foreground",
             collapsed ? "justify-center" : "gap-2.5"
           )}
           title="Notifications"
@@ -188,27 +210,28 @@ export function Sidebar() {
           <Bell className="h-3.5 w-3.5 shrink-0" />
           {!collapsed && <span className="flex-1 text-left">Notifications</span>}
           {!collapsed && (
-            <span className="flex h-4.5 min-w-[1.125rem] items-center justify-center rounded-full bg-[var(--color-primary)] px-1 text-[10px] font-bold text-white">
+            <span className="flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">
               3
             </span>
           )}
         </button>
 
         <button
+          onClick={logout}
           className={cn(
-            "group flex w-full items-center rounded-lg p-2 transition-colors hover:bg-[var(--color-surface-elevated)]",
+            "group flex w-full items-center rounded-lg p-2 transition-colors hover:bg-surface-elevated",
             collapsed ? "justify-center" : "gap-2.5"
           )}
-          title="Account"
+          title={collapsed ? "Sign out" : "Account"}
         >
-          <Avatar name="Ken Garcia" size="sm" />
+          <Avatar name={user?.name ?? ""} size="sm" />
           {!collapsed && (
             <>
               <div className="min-w-0 flex-1 text-left">
-                <p className="truncate text-xs font-semibold text-[var(--color-foreground)]">Ken Garcia</p>
-                <p className="truncate text-xs text-[var(--color-foreground-subtle)]">Admin</p>
+                <p className="truncate text-xs font-semibold text-foreground">{user?.name ?? "—"}</p>
+                <p className="truncate text-xs text-foreground-subtle">{user?.role ?? ""}</p>
               </div>
-              <LogOut className="h-3.5 w-3.5 shrink-0 text-[var(--color-foreground-subtle)] opacity-0 transition-opacity group-hover:opacity-100" />
+              <LogOut className="h-3.5 w-3.5 shrink-0 text-foreground-subtle opacity-0 transition-opacity group-hover:opacity-100" />
             </>
           )}
         </button>

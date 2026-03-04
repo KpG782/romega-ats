@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Merriweather, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/lib/auth-context";
 
 const sourceSans = Source_Sans_3({
   subsets: ["latin"],
@@ -20,8 +21,15 @@ const merriweather = Merriweather({
 });
 
 export const metadata: Metadata = {
-  title: "Romega ATS",
-  description: "Internal Applicant Tracking System — Romega Solutions",
+  title: "Roméga ATS — Hiring Platform",
+  description: "Internal Applicant Tracking System — Roméga Solutions",
+  icons: {
+    icon: [
+      { url: "/public/images/fav-icon.ico" },
+      { url: "/public/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: "/public/icon-512.png",
+  },
 };
 
 export default function RootLayout({
@@ -34,7 +42,9 @@ export default function RootLayout({
       data-theme="light"
       suppressHydrationWarning
     >
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

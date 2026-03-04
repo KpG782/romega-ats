@@ -190,7 +190,7 @@ export default function DashboardPage() {
 
       <div className="flex-1 overflow-y-auto">
         <div className="p-10 space-y-10">
-          <div className="flex flex-wrap items-center gap-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4 py-3">
+          <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-surface px-4 py-3">
             <Badge variant="info">Pipeline health: Good</Badge>
             <Badge variant="default">Response SLA: 92%</Badge>
             <span className="text-xs text-foreground-subtle">
