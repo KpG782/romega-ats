@@ -16,8 +16,10 @@ import {
   Building2,
   UserCheck,
   LogOut,
+  Loader2,
   PanelLeftClose,
   PanelLeftOpen,
+  Grid2x2,
 } from "lucide-react";
 import Image from "next/image";
 import { Avatar } from "@/components/ui/avatar";
@@ -33,6 +35,7 @@ const navItems = [
 
 const secondaryNav = [
   { label: "Automations", href: "/automations", icon: Zap },
+  { label: "Internal Tools", href: "/internal-tools", icon: Grid2x2 },
   { label: "Departments", href: "/departments", icon: Building2 },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
@@ -40,7 +43,19 @@ const secondaryNav = [
 export function Sidebar() {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const { user, logout } = useAuth();
+
+  const handleSignOut = async () => {
+    if (isSigningOut) return;
+
+    setIsSigningOut(true);
+    try {
+      await logout();
+    } finally {
+      setIsSigningOut(false);
+    }
+  };
 
   const isActive = (href: string) => {
     if (href === "/dashboard") return pathname === "/dashboard";
@@ -63,6 +78,7 @@ export function Sidebar() {
               width={120}
               height={32}
               className="object-contain"
+              style={{ width: "auto", height: "auto" }}
               priority
             />
             <p className="text-[10px] font-medium uppercase tracking-widest text-foreground-subtle">ATS Platform</p>
@@ -217,12 +233,15 @@ export function Sidebar() {
         </button>
 
         <button
-          onClick={logout}
+          type="button"
+          onClick={handleSignOut}
+          disabled={isSigningOut}
+          aria-busy={isSigningOut}
           className={cn(
-            "group flex w-full items-center rounded-lg p-2 transition-colors hover:bg-surface-elevated",
+            "group flex w-full items-center rounded-lg p-2 transition-colors hover:bg-surface-elevated disabled:cursor-not-allowed disabled:opacity-70",
             collapsed ? "justify-center" : "gap-2.5"
           )}
-          title={collapsed ? "Sign out" : "Account"}
+          title={isSigningOut ? "Signing out..." : collapsed ? "Sign out" : "Account"}
         >
           <Avatar name={user?.name ?? ""} size="sm" />
           {!collapsed && (
@@ -231,7 +250,11 @@ export function Sidebar() {
                 <p className="truncate text-xs font-semibold text-foreground">{user?.name ?? "—"}</p>
                 <p className="truncate text-xs text-foreground-subtle">{user?.role ?? ""}</p>
               </div>
-              <LogOut className="h-3.5 w-3.5 shrink-0 text-foreground-subtle opacity-0 transition-opacity group-hover:opacity-100" />
+              {isSigningOut ? (
+                <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-foreground-subtle" />
+              ) : (
+                <LogOut className="h-3.5 w-3.5 shrink-0 text-foreground-subtle opacity-0 transition-opacity group-hover:opacity-100" />
+              )}
             </>
           )}
         </button>

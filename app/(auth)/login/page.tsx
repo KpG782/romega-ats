@@ -15,24 +15,60 @@ export default function LoginPage() {
 }
 
 function LoginForm() {
-  const { login } = useAuth();
+  const { login, signup } = useAuth();
   const searchParams = useSearchParams();
-  const _next = searchParams.get("next") || "/dashboard";
+  const nextPath = searchParams.get("next") || "/dashboard";
 
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setNotice(null);
+
+    if (mode === "signup" && password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
     startTransition(async () => {
-      const result = await login(email, password);
-      if (result.error) setError(result.error);
+      if (mode === "signin") {
+        const result = await login(email, password, nextPath);
+        if (result.error) setError(result.error);
+        return;
+      }
+
+      const result = await signup({
+        fullName,
+        email,
+        password,
+        nextPath,
+      });
+
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+
+      if (result.requiresEmailConfirm) {
+        setNotice("Account created. Please verify your email, then sign in.");
+        setMode("signin");
+        return;
+      }
+
+      setNotice("Account created successfully. Redirecting...");
     });
   };
+
+  const submitLabel = mode === "signin" ? "Sign in" : "Create account";
 
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12">
@@ -46,6 +82,7 @@ function LoginForm() {
               width={180}
               height={48}
               className="object-contain"
+              style={{ width: "auto", height: "auto" }}
               priority
             />
           </div>
@@ -71,6 +108,39 @@ function LoginForm() {
             boxShadow: "var(--shadow-elevated)",
           }}
         >
+          <div className="mb-5 grid grid-cols-2 rounded-lg border border-border bg-surface p-1">
+            <button
+              type="button"
+              onClick={() => {
+                setMode("signin");
+                setError(null);
+                setNotice(null);
+              }}
+              className="rounded-md px-3 py-2 text-sm font-medium transition-colors"
+              style={{
+                background: mode === "signin" ? "var(--color-primary)" : "transparent",
+                color: mode === "signin" ? "var(--color-primary-foreground)" : "var(--color-foreground-muted)",
+              }}
+            >
+              Sign in
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setMode("signup");
+                setError(null);
+                setNotice(null);
+              }}
+              className="rounded-md px-3 py-2 text-sm font-medium transition-colors"
+              style={{
+                background: mode === "signup" ? "var(--color-primary)" : "transparent",
+                color: mode === "signup" ? "var(--color-primary-foreground)" : "var(--color-foreground-muted)",
+              }}
+            >
+              Create account
+            </button>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Error banner */}
             {error && (
@@ -84,6 +154,47 @@ function LoginForm() {
               >
                 <span className="mt-px shrink-0 text-base leading-none">⚠</span>
                 {error}
+              </div>
+            )}
+
+            {notice && (
+              <div
+                className="rounded-lg border px-3.5 py-3 text-sm"
+                style={{
+                  background: "#ecfdf5",
+                  borderColor: "#86efac",
+                  color: "#166534",
+                }}
+              >
+                {notice}
+              </div>
+            )}
+
+            {mode === "signup" && (
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="fullName"
+                  className="block text-sm font-medium"
+                  style={{ color: "var(--color-foreground)" }}
+                >
+                  Full name
+                </label>
+                <input
+                  id="fullName"
+                  type="text"
+                  autoComplete="name"
+                  required
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Your full name"
+                  disabled={isPending}
+                  className="w-full rounded-lg border px-3.5 py-2.5 text-sm outline-none transition-all"
+                  style={{
+                    borderColor: "var(--color-border)",
+                    color: "var(--color-foreground)",
+                    backgroundColor: "var(--color-surface)",
+                  }}
+                />
               </div>
             )}
 
@@ -165,6 +276,34 @@ function LoginForm() {
               </div>
             </div>
 
+            {mode === "signup" && (
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-sm font-medium"
+                  style={{ color: "var(--color-foreground)" }}
+                >
+                  Confirm password
+                </label>
+                <input
+                  id="confirmPassword"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  required
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="••••••••"
+                  disabled={isPending}
+                  className="w-full rounded-lg border py-2.5 px-3.5 text-sm outline-none transition-all"
+                  style={{
+                    borderColor: "var(--color-border)",
+                    color: "var(--color-foreground)",
+                    backgroundColor: "var(--color-surface)",
+                  }}
+                />
+              </div>
+            )}
+
             {/* Submit */}
             <button
               type="submit"
@@ -182,18 +321,18 @@ function LoginForm() {
               {isPending ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Signing in…
+                  {mode === "signin" ? "Signing in..." : "Creating account..."}
                 </>
               ) : (
                 <>
                   <LogIn className="h-4 w-4" />
-                  Sign in
+                  {submitLabel}
                 </>
               )}
             </button>
           </form>
 
-          {/* Demo hint */}
+          {/* Security hint */}
           <div
             className="mt-6 rounded-lg border p-3.5 text-xs"
             style={{
@@ -203,16 +342,9 @@ function LoginForm() {
             }}
           >
             <p className="font-semibold mb-1" style={{ color: "var(--color-foreground)" }}>
-              Demo credentials
+              Account access
             </p>
-            <div className="space-y-0.5">
-              <p>
-                <span className="font-medium">Admin:</span> ken@romega.com / admin123
-              </p>
-              <p>
-                <span className="font-medium">Recruiter:</span> sarah@romega.com / recruiter123
-              </p>
-            </div>
+            <p>Create your first account here if this is a fresh setup, then sign in.</p>
           </div>
         </div>
 
